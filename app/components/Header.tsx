@@ -135,12 +135,22 @@ function HeaderCtas({
 }
 
 function HeaderMenuMobileToggle() {
-  const {open} = useAside();
+  const {open, close, type} = useAside();
+  const isMenuOpen = type === 'mobile';
+  
+  const toggleMenu = () => {
+    if (isMenuOpen) {
+      close();
+    } else {
+      open('mobile');
+    }
+  };
+  
   return (
     <button
       className="md:hidden p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-50 transition-colors"
-      onClick={() => open('mobile')}
-      aria-label="Ouvrir le menu mobile"
+      onClick={toggleMenu}
+      aria-label={isMenuOpen ? "Fermer le menu mobile" : "Ouvrir le menu mobile"}
     >
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
