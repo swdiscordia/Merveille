@@ -10,20 +10,74 @@ type CartSummaryProps = {
 };
 
 export function CartSummary({cart, layout}: CartSummaryProps) {
+  const hasDiscounts = cart.discountCodes?.some(discount => discount.applicable) || false;
+  const hasGiftCards = cart.appliedGiftCards && cart.appliedGiftCards.length > 0;
+  const hasAnyDiscounts = hasDiscounts || hasGiftCards;
+
+  // Calculer le pourcentage de réduction
+  const calculateDiscountPercentage = () => {
+    if (!cart.cost?.subtotalAmount?.amount || !cart.cost?.totalAmount?.amount) return null;
+    
+    const subtotal = parseFloat(cart.cost.subtotalAmount.amount);
+    const total = parseFloat(cart.cost.totalAmount.amount);
+    const discount = subtotal - total;
+    const percentage = (discount / subtotal) * 100;
+    
+    return Math.round(percentage);
+  };
+
+  const discountPercentage = calculateDiscountPercentage();
+
   return (
     <div aria-labelledby="cart-summary" className="border-t border-gray-200 pt-6 mt-6">
       <h4 className="text-lg font-semibold text-gray-900 mb-4">Total</h4>
       <dl className="space-y-2 mb-6">
-        <div className="flex justify-between">
-          <dt className="text-sm text-gray-600">Sous-total</dt>
-          <dd className="text-sm font-medium text-gray-900">
-            {cart.cost?.subtotalAmount?.amount ? (
-              <Money data={cart.cost?.subtotalAmount} />
-            ) : (
-              '-'
+        {/* Affichage conditionnel : soit total simple, soit détail avec réduction */}
+        {hasAnyDiscounts ? (
+          <>
+                        <div className="flex justify-between">
+              <dt className="text-sm text-gray-600">Prix original</dt>
+              <dd className="text-sm text-gray-500 line-through">
+                {cart.cost?.subtotalAmount?.amount ? (
+                  <Money data={cart.cost?.subtotalAmount} />
+                ) : (
+                  '-'
+                )}
+              </dd>
+            </div>
+            {discountPercentage && (
+              <div className="flex justify-between text-green-600">
+                <dt className="text-sm">Réduction</dt>
+                <dd className="text-sm font-medium">
+                  -{discountPercentage}%
+                </dd>
+              </div>
             )}
-          </dd>
-        </div>
+            <div className="border-t border-gray-200 pt-2">
+              <div className="flex justify-between">
+                <dt className="text-sm font-semibold text-gray-900">À payer</dt>
+                <dd className="text-sm font-semibold text-gray-900">
+                  {cart.cost?.totalAmount?.amount ? (
+                    <Money data={cart.cost?.totalAmount} />
+                  ) : (
+                    '-'
+                  )}
+                </dd>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex justify-between">
+            <dt className="text-sm font-semibold text-gray-900">À payer</dt>
+            <dd className="text-sm font-semibold text-gray-900">
+              {cart.cost?.subtotalAmount?.amount ? (
+                <Money data={cart.cost?.subtotalAmount} />
+              ) : (
+                '-'
+              )}
+            </dd>
+          </div>
+        )}
       </dl>
       <div className="space-y-4">
         <UnifiedCodeForm discountCodes={cart.discountCodes} giftCardCodes={cart.appliedGiftCards} />
@@ -59,6 +113,7 @@ function UnifiedCodeForm({
   giftCardCodes: CartApiQueryFragment['appliedGiftCards'] | undefined;
 }) {
   const [codeType, setCodeType] = useState<'discount' | 'giftcard'>('discount');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const appliedGiftCardCodes = useRef<string[]>([]);
 
   const discountCodesList: string[] =
@@ -83,37 +138,55 @@ function UnifiedCodeForm({
         <div className="space-y-2">
           {discountCodesList.length > 0 && (
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-md space-y-2 sm:space-y-0">
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
                 <span className="text-sm text-gray-600">Réduction appliquée:</span>
-                <code className="text-sm bg-white px-2 py-1 rounded border break-all">{discountCodesList.join(', ')}</code>
+                <code className="text-sm bg-white px-2 py-1 rounded border break-all max-w-full truncate">{discountCodesList.join(', ')}</code>
               </div>
-              <UpdateDiscountForm discountCodes={discountCodesList}>
-                <button className="text-gray-400 hover:text-red-600 transition-colors p-1">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  <span className="sr-only">Supprimer</span>
-                </button>
-              </UpdateDiscountForm>
-            </div>
-          )}
-          
-          {giftCardCodesList.length > 0 && (
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-md space-y-2 sm:space-y-0">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Carte cadeau:</span>
-                <code className="text-sm bg-white px-2 py-1 rounded border break-all">{giftCardCodesList.join(', ')}</code>
-              </div>
-              <UpdateGiftCardForm>
+              <CartForm
+                route="/cart"
+                action={CartForm.ACTIONS.DiscountCodesUpdate}
+                inputs={{
+                  discountCodes: [],
+                }}
+              >
                 <button 
-                  className="text-gray-400 hover:text-red-600 transition-colors p-1"
+                  type="submit"
+                  className="text-gray-400 hover:text-red-600 transition-colors p-1 self-start sm:self-center"
+                  aria-label="Supprimer la réduction"
                 >
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                   <span className="sr-only">Supprimer</span>
                 </button>
-              </UpdateGiftCardForm>
+              </CartForm>
+            </div>
+          )}
+          
+          {giftCardCodesList.length > 0 && (
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-md space-y-2 sm:space-y-0">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                <span className="text-sm text-gray-600">Carte cadeau:</span>
+                <code className="text-sm bg-white px-2 py-1 rounded border break-all max-w-full truncate">{giftCardCodesList.join(', ')}</code>
+              </div>
+              <CartForm
+                route="/cart"
+                action={CartForm.ACTIONS.GiftCardCodesUpdate}
+                inputs={{
+                  giftCardCodes: [],
+                }}
+              >
+                <button 
+                  type="submit"
+                  className="text-gray-400 hover:text-red-600 transition-colors p-1 self-start sm:self-center"
+                  aria-label="Supprimer la carte cadeau"
+                >
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  <span className="sr-only">Supprimer</span>
+                </button>
+              </CartForm>
             </div>
           )}
         </div>
@@ -149,42 +222,12 @@ function UnifiedCodeForm({
 
         {/* Formulaire conditionnel */}
         {codeType === 'discount' ? (
-          <UpdateDiscountForm discountCodes={discountCodesList}>
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <input 
-                type="text" 
-                name="discountCode" 
-                placeholder="Code de réduction" 
-                className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-black focus:border-black text-sm"
-              />
-              <button 
-                type="submit"
-                className="px-4 py-2 bg-gray-100 text-gray-900 rounded-md hover:bg-gray-200 transition-colors text-sm font-medium whitespace-nowrap"
-              >
-                Appliquer
-              </button>
-            </div>
-          </UpdateDiscountForm>
+          <UpdateDiscountForm discountCodes={discountCodesList} />
         ) : (
           <UpdateGiftCardForm
             giftCardCodes={appliedGiftCardCodes.current}
             saveAppliedCode={saveAppliedGiftCardCode}
-          >
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <input
-                type="text"
-                name="giftCardCode"
-                placeholder="Code carte cadeau"
-                className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-black focus:border-black text-sm"
-              />
-              <button 
-                type="submit"
-                className="px-4 py-2 bg-gray-100 text-gray-900 rounded-md hover:bg-gray-200 transition-colors text-sm font-medium whitespace-nowrap"
-              >
-                Appliquer
-              </button>
-            </div>
-          </UpdateGiftCardForm>
+          />
         )}
       </div>
     </div>
@@ -193,10 +236,8 @@ function UnifiedCodeForm({
 
 function UpdateDiscountForm({
   discountCodes,
-  children,
 }: {
   discountCodes?: string[];
-  children: React.ReactNode;
 }) {
   return (
     <CartForm
@@ -206,7 +247,29 @@ function UpdateDiscountForm({
         discountCodes: discountCodes || [],
       }}
     >
-      {children}
+      {(fetcher: FetcherWithComponents<any>) => {
+        const isSubmitting = fetcher.state === 'submitting';
+        return (
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <input 
+              type="text" 
+              name="discountCode" 
+              placeholder="Code de réduction" 
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-black focus:border-black text-sm"
+              required
+              minLength={1}
+              disabled={isSubmitting}
+            />
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-gray-100 text-gray-900 rounded-md hover:bg-gray-200 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? 'Application...' : 'Appliquer'}
+            </button>
+          </div>
+        );
+      }}
     </CartForm>
   );
 }
@@ -214,12 +277,10 @@ function UpdateDiscountForm({
 function UpdateGiftCardForm({
   giftCardCodes,
   saveAppliedCode,
-  children,
 }: {
   giftCardCodes?: string[];
   saveAppliedCode?: (code: string) => void;
   removeAppliedCode?: () => void;
-  children: React.ReactNode;
 }) {
   return (
     <CartForm
@@ -230,11 +291,30 @@ function UpdateGiftCardForm({
       }}
     >
       {(fetcher: FetcherWithComponents<any>) => {
+        const isSubmitting = fetcher.state === 'submitting';
         const code = fetcher.formData?.get('giftCardCode');
         if (code && saveAppliedCode) {
           saveAppliedCode(code as string);
         }
-        return children;
+        return (
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <input
+              type="text"
+              name="giftCardCode"
+              placeholder="Code carte cadeau"
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-black focus:border-black text-sm"
+              required
+              disabled={isSubmitting}
+            />
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-gray-100 text-gray-900 rounded-md hover:bg-gray-200 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? 'Application...' : 'Appliquer'}
+            </button>
+          </div>
+        );
       }}
     </CartForm>
   );
