@@ -114,13 +114,13 @@ function HeaderCtas({
   cart,
 }: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
   return (
-    <nav className="flex items-center space-x-4" role="navigation">
+    <nav className="flex items-center space-x-2" role="navigation">
       <HeaderMenuMobileToggle />
       <NavLink 
         prefetch="intent" 
         to="/account" 
         style={activeLinkStyle}
-        className="text-gray-900 hover:text-gray-700 transition-colors font-medium"
+        className="text-gray-900 hover:text-gray-700 transition-colors font-medium px-3 py-2 rounded-md hover:bg-gray-50"
       >
         <Suspense fallback="Se connecter">
           <Await resolve={isLoggedIn} errorElement="Se connecter">
@@ -138,11 +138,11 @@ function HeaderMenuMobileToggle() {
   const {open} = useAside();
   return (
     <button
-      className="md:hidden p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+      className="md:hidden p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-50 transition-colors"
       onClick={() => open('mobile')}
       aria-label="Ouvrir le menu mobile"
     >
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
@@ -153,11 +153,11 @@ function SearchToggle() {
   const {open} = useAside();
   return (
     <button 
-      className="p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-100 transition-colors" 
+      className="p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-50 transition-colors" 
       onClick={() => open('search')}
       aria-label="Rechercher"
     >
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
     </button>
@@ -180,14 +180,14 @@ function CartBadge({count}: {count: number | null}) {
           url: window.location.href || '',
         } as CartViewPayload);
       }}
-      className="p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-100 transition-colors relative"
+      className="p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-50 transition-colors relative"
       aria-label="Panier"
     >
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
       {count !== null && count > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+        <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
           {count}
         </span>
       )}
