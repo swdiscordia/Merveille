@@ -20,7 +20,7 @@ export async function loader(args: LoaderFunctionArgs) {
  */
 async function loadCriticalData({context, request}: LoaderFunctionArgs) {
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 4,
+    pageBy: 6,
   });
 
   const [{collections}] = await Promise.all([
@@ -45,21 +45,33 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 export default function Collections() {
   const {collections} = useLoaderData<typeof loader>();
 
+  // Filtrer la collection "frontpage" qui est créée automatiquement par Shopify
+  const filteredCollections = collections.nodes.filter(
+    (collection) => collection.handle !== 'frontpage'
+  );
+
   return (
-    <div className="collections">
-      <h1>Collections</h1>
-      <PaginatedResourceSection
-        connection={collections}
-        resourcesClassName="collections-grid"
-      >
-        {({node: collection, index}) => (
-          <CollectionItem
-            key={collection.id}
-            collection={collection}
-            index={index}
-          />
-        )}
-      </PaginatedResourceSection>
+    <div className="collections-page">
+      <div className="container">
+        <div className="collections-header">
+          <h1>Collections</h1>
+        </div>
+        <PaginatedResourceSection
+          connection={{
+            ...collections,
+            nodes: filteredCollections,
+          }}
+          resourcesClassName="collections-grid"
+        >
+          {({node: collection, index}) => (
+            <CollectionItem
+              key={collection.id}
+              collection={collection}
+              index={index}
+            />
+          )}
+        </PaginatedResourceSection>
+      </div>
     </div>
   );
 }
@@ -72,22 +84,23 @@ function CollectionItem({
   index: number;
 }) {
   return (
-    <Link
-      className="collection-item"
-      key={collection.id}
-      to={`/collections/${collection.handle}`}
-      prefetch="intent"
-    >
-      {collection?.image && (
-        <Image
-          alt={collection.image.altText || collection.title}
-          aspectRatio="1/1"
-          data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h5>{collection.title}</h5>
+    <Link to={`/collections/${collection.handle}`} className="collection-card">
+      <div className="collection-image">
+        {collection?.image ? (
+          <Image
+            alt={collection.image.altText || collection.title}
+            aspectRatio="1/1"
+            data={collection.image}
+            loading={index < 6 ? 'eager' : undefined}
+            sizes="(min-width: 45em) 400px, 100vw"
+          />
+        ) : (
+          <div className="collection-icon">🎵</div>
+        )}
+      </div>
+      <div className="collection-label">
+        {collection.title} →
+      </div>
     </Link>
   );
 }
