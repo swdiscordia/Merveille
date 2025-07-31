@@ -9,7 +9,7 @@ import type {
 import {ProductItem} from '~/components/ProductItem';
 
 export const meta: MetaFunction = () => {
-  return [{title: 'Hydrogen | Home'}];
+  return [{title: 'Merveille | Artisanat d\'exception'}];
 };
 
 export async function loader(args: LoaderFunctionArgs) {
@@ -60,8 +60,94 @@ export default function Homepage() {
   const data = useLoaderData<typeof loader>();
   return (
     <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <h1 className="hero-title">Merveille du Monde</h1>
+          <p className="hero-subtitle">Artisanat d'exception, créations uniques</p>
+          <p className="hero-description">
+            Découvrez notre collection d'objets artisanaux soigneusement sélectionnés : 
+            boîtes à musique, boîtes à bijoux et globes terrestres de qualité exceptionnelle.
+          </p>
+          <Link to="/collections" className="hero-cta">
+            Découvrir nos collections
+          </Link>
+        </div>
+
+      </section>
+
+
+
+      {/* Featured Products Section */}
+      <section className="featured-products">
+        <div className="container">
+          <h2 className="section-title">Nouveautés</h2>
+          <Suspense fallback={<div className="loading">Chargement de nos créations...</div>}>
+            <Await resolve={data.recommendedProducts}>
+              {(response) => (
+                <div className="products-grid">
+                  {response
+                    ? response.products.nodes.map((product: any) => (
+                        <ProductItem key={product.id} product={product} />
+                      ))
+                    : null}
+                </div>
+              )}
+            </Await>
+          </Suspense>
+        </div>
+      </section>
+
+      {/* Featured Collection */}
+      {data.featuredCollection && (
+        <section className="featured-collection-section">
+          <div className="container">
+            <FeaturedCollection collection={data.featuredCollection} />
+          </div>
+        </section>
+      )}
+
+      {/* Artisanat Values Section */}
+      <section className="values-section">
+        <div className="container">
+          <h2 className="section-title">Notre Savoir-Faire</h2>
+          <div className="values-grid">
+            <div className="value-item">
+              <div className="value-icon">🎨</div>
+              <h3>Artisanat Français</h3>
+              <p>Chaque pièce est créée avec passion par des artisans français, respectant les traditions et techniques ancestrales.</p>
+            </div>
+            <div className="value-item">
+              <div className="value-icon">✨</div>
+              <h3>Qualité Exceptionnelle</h3>
+              <p>Nous sélectionnons uniquement les matériaux les plus nobles et les finitions les plus soignées pour nos créations.</p>
+            </div>
+            <div className="value-item">
+              <div className="value-icon">💝</div>
+              <h3>Pièces Uniques</h3>
+              <p>Chaque objet raconte une histoire et devient un héritage précieux à transmettre aux générations futures.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="newsletter-section">
+        <div className="container">
+          <h2>Restez informé de nos nouvelles créations</h2>
+          <p>Recevez en avant-première nos dernières collections et offres exclusives</p>
+          <form className="newsletter-form">
+            <input 
+              type="email" 
+              placeholder="Votre adresse email" 
+              className="newsletter-input"
+            />
+            <button type="submit" className="newsletter-button">
+              S'inscrire
+            </button>
+          </form>
+        </div>
+      </section>
     </div>
   );
 }
@@ -74,42 +160,22 @@ function FeaturedCollection({
   if (!collection) return null;
   const image = collection?.image;
   return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
+    <div className="featured-collection-card">
+      <Link
+        className="featured-collection-link"
+        to={`/collections/${collection.handle}`}
+      >
+        {image && (
+          <div className="featured-collection-image">
+            <Image data={image} sizes="100vw" />
+          </div>
+        )}
+        <div className="featured-collection-content">
+          <h2>{collection.title}</h2>
+          <p>Découvrez notre collection vedette</p>
+          <span className="featured-collection-cta">Voir la collection</span>
         </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
-  );
-}
-
-function RecommendedProducts({
-  products,
-}: {
-  products: Promise<RecommendedProductsQuery | null>;
-}) {
-  return (
-    <div className="recommended-products">
-      <h2>Recommended Products</h2>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Await resolve={products}>
-          {(response) => (
-            <div className="recommended-products-grid">
-              {response
-                ? response.products.nodes.map((product) => (
-                    <ProductItem key={product.id} product={product} />
-                  ))
-                : null}
-            </div>
-          )}
-        </Await>
-      </Suspense>
-      <br />
+      </Link>
     </div>
   );
 }
@@ -158,7 +224,7 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
+    products(first: 6, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...RecommendedProduct
       }
