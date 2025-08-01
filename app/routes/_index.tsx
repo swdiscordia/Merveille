@@ -1,9 +1,9 @@
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link, type MetaFunction} from 'react-router';
-import {Suspense} from 'react';
+import {Suspense, useState, useRef, useEffect} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import type {
-  FeaturedCollectionFragment,
+  CollectionFragment,
   RecommendedProductsQuery,
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
@@ -28,12 +28,20 @@ export async function loader(args: LoaderFunctionArgs) {
  */
 async function loadCriticalData({context}: LoaderFunctionArgs) {
   const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
+    context.storefront.query(COLLECTIONS_QUERY),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
+  // Filtrer la collection "frontpage" qui est créée automatiquement par Shopify
+  const filteredCollections = collections.nodes.filter(
+    (collection: CollectionFragment) => collection.handle !== 'frontpage'
+  );
+
   return {
-    featuredCollection: collections.nodes[0],
+    collections: {
+      ...collections,
+      nodes: filteredCollections,
+    },
   };
 }
 
@@ -73,10 +81,7 @@ export default function Homepage() {
             Découvrir nos collections
           </Link>
         </div>
-
       </section>
-
-
 
       {/* Featured Products Section */}
       <section className="featured-products">
@@ -98,11 +103,12 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* Featured Collection */}
-      {data.featuredCollection && (
-        <section className="featured-collection-section">
+      {/* All Collections Section */}
+      {data.collections && data.collections.nodes.length > 0 && (
+        <section className="collections-section">
           <div className="container">
-            <FeaturedCollection collection={data.featuredCollection} />
+            <h2 className="section-title">Nos Collections</h2>
+            <CollectionsSlider collections={data.collections.nodes} />
           </div>
         </section>
       )}
@@ -152,38 +158,125 @@ export default function Homepage() {
   );
 }
 
-function FeaturedCollection({
-  collection,
-}: {
-  collection: FeaturedCollectionFragment;
-}) {
-  if (!collection) return null;
-  const image = collection?.image;
+function CollectionsSlider({collections}: {collections: CollectionFragment[]}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  
+  // Calculer le nombre de collections par vue basé sur la largeur d'écran
+  const getCollectionsPerView = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768 ? 1 : 3.5;
+    }
+    return 3.5; // Valeur par défaut pour SSR
+  };
+  
+  const [collectionsPerView, setCollectionsPerView] = useState(3.5);
+  
+  // Mettre à jour le nombre de collections par vue quand la fenêtre change de taille
+  useEffect(() => {
+    const updateCollectionsPerView = () => {
+      setCollectionsPerView(window.innerWidth <= 768 ? 1 : 3.5);
+    };
+    
+    updateCollectionsPerView();
+    window.addEventListener('resize', updateCollectionsPerView);
+    
+    return () => window.removeEventListener('resize', updateCollectionsPerView);
+  }, []);
+  
+  const maxIndex = Math.max(0, collections.length - Math.floor(collectionsPerView));
+
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  };
+
+  const canGoPrevious = currentIndex > 0;
+  const canGoNext = currentIndex < maxIndex;
+
   return (
-    <div className="featured-collection-card">
-      <Link
-        className="featured-collection-link"
-        to={`/collections/${collection.handle}`}
-      >
-        {image && (
-          <div className="featured-collection-image">
-            <Image data={image} sizes="100vw" />
-          </div>
-        )}
-        <div className="featured-collection-content">
-          <h2>{collection.title}</h2>
-          <p>Découvrez notre collection vedette</p>
-          <span className="featured-collection-cta">Voir la collection</span>
+    <div className="collections-slider-container">
+      <div className="collections-slider-wrapper">
+        <div 
+          ref={sliderRef}
+          className={`collections-slider ${collectionsPerView === 1 ? 'mobile-view' : ''}`}
+          style={{
+            transform: `translateX(-${currentIndex * (100 / collectionsPerView)}%)`,
+          }}
+        >
+          {collections.map((collection: CollectionFragment, index: number) => (
+            <CollectionItem
+              key={collection.id}
+              collection={collection}
+              index={index}
+            />
+          ))}
         </div>
-      </Link>
+      </div>
+      
+      {/* Navigation Buttons */}
+      <button
+        className={`slider-nav-button slider-nav-prev ${!canGoPrevious ? 'disabled' : ''}`}
+        onClick={goToPrevious}
+        disabled={!canGoPrevious}
+        aria-label="Collection précédente"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+      
+      <button
+        className={`slider-nav-button slider-nav-next ${!canGoNext ? 'disabled' : ''}`}
+        onClick={goToNext}
+        disabled={!canGoNext}
+        aria-label="Collection suivante"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
     </div>
   );
 }
 
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
+function CollectionItem({
+  collection,
+  index,
+}: {
+  collection: CollectionFragment;
+  index: number;
+}) {
+  return (
+    <Link to={`/collections/${collection.handle}`} className="collection-card">
+      <div className="collection-image">
+        {collection?.image ? (
+          <Image
+            alt={collection.image.altText || collection.title}
+            aspectRatio="1/1"
+            data={collection.image}
+            loading={index < 6 ? 'eager' : undefined}
+            sizes="(min-width: 45em) 400px, 100vw"
+          />
+        ) : (
+          <div className="collection-icon">🎵</div>
+        )}
+      </div>
+      <div className="collection-label">
+        {collection.title} →
+      </div>
+    </Link>
+  );
+}
+
+const COLLECTIONS_QUERY = `#graphql
+  fragment Collection on Collection {
     id
     title
+    handle
     image {
       id
       url
@@ -191,13 +284,12 @@ const FEATURED_COLLECTION_QUERY = `#graphql
       width
       height
     }
-    handle
   }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
+  query StoreCollections($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 50, sortKey: UPDATED_AT, reverse: true) {
       nodes {
-        ...FeaturedCollection
+        ...Collection
       }
     }
   }

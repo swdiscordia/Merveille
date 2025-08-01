@@ -1,0 +1,10 @@
+[33m8f40213[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mAntoine[m[33m, [m[1;31morigin/Antoine[m[33m)[m Fix: Amélioration du menu mobile et animations fluides - Correction du bouton burger (bascule ouvert/fermé) - Amélioration du bouton de fermeture (taille et styles) - Animation fluide avec cubic-bezier pour ouverture/fermeture - Responsive optimisé pour les collections (breakpoints 500px, 400px) - Correction des hauteurs adaptatives (min-height au lieu de height) - Respect des règles hydrogen-react-router.mdc
+[33m654d490[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge pull request #3 from swdiscordia/Antoine
+[33m0937ce7[m feat: redesign homepage and collections page with modern UI
+[33ma696b64[m Merge pull request #2 from swdiscordia/Cart
+[33m337b37d[m Améliorer l'affichage du total avec pourcentage de réduction et responsive design
+[33m9e30478[m Fix cart menu scroll and adjust checkout button position
+[33m00199ba[m feat: améliorer le Header avec des icônes modernes et Tailwind CSS
+[33m27a524c[m Merge pull request #1 from swdiscordia/shopify-setup-oxygen-workflow-sq3m
+[33m463c7bb[m Set up Shopify Oxygen deployment workflow file
+[33ma86a638[m Lockfile
