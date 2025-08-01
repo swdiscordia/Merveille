@@ -1,7 +1,7 @@
 import {useLoaderData, Link} from 'react-router';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
-import type {CollectionFragment} from 'storefrontapi.generated';
+import type {StoreCollectionsPaginatedQuery} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
 export async function loader(args: LoaderFunctionArgs) {
@@ -80,7 +80,7 @@ function CollectionItem({
   collection,
   index,
 }: {
-  collection: CollectionFragment;
+  collection: StoreCollectionsPaginatedQuery['collections']['nodes'][0];
   index: number;
 }) {
   return (
@@ -118,7 +118,7 @@ const COLLECTIONS_QUERY = `#graphql
       height
     }
   }
-  query StoreCollections(
+  query StoreCollectionsPaginated(
     $country: CountryCode
     $endCursor: String
     $first: Int
