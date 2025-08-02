@@ -9,8 +9,10 @@ import {
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
 import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
+import {ProductGallery} from '~/components/ProductGallery';
 import {ProductForm} from '~/components/ProductForm';
+import {ProductTabs} from '~/components/ProductTabs';
+import {EmotionSection} from '~/components/EmotionSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
@@ -102,44 +104,79 @@ export default function Product() {
   const {title, descriptionHtml} = product;
 
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
+    <>
+      <div className="product-container">
+        <div className="product">
+          {/* Breadcrumb */}
+          <nav className="breadcrumb" aria-label="Breadcrumb">
+            <ol className="breadcrumb-list">
+              <li className="breadcrumb-item">
+                <a href="/" className="breadcrumb-link">Accueil</a>
+              </li>
+              <li className="breadcrumb-item">
+                <span className="breadcrumb-separator">/</span>
+              </li>
+              {product.collections?.nodes?.[0] && (
+                <>
+                  <li className="breadcrumb-item">
+                    <a href={`/collections/${product.collections.nodes[0].handle}`} className="breadcrumb-link">
+                      {product.collections.nodes[0].title}
+                    </a>
+                  </li>
+                  <li className="breadcrumb-item">
+                    <span className="breadcrumb-separator">/</span>
+                  </li>
+                </>
+              )}
+              <li className="breadcrumb-item">
+                <span className="breadcrumb-current">{product.title}</span>
+              </li>
+            </ol>
+          </nav>
+          
+          <div className="product-content">
+            <ProductGallery 
+              images={product.images}
+              selectedVariantImage={selectedVariant?.image}
+            />
+            <div className="product-main">
+            <h1>{title}</h1>
+            <ProductPrice
+              price={selectedVariant?.price}
+              compareAtPrice={selectedVariant?.compareAtPrice}
+            />
+            <br />
+            <ProductForm
+              productOptions={productOptions}
+              selectedVariant={selectedVariant}
+            />
+            <br />
+
+          </div>
+                </div>
+        </div>
+        
+        <ProductTabs product={product} />
+        
+        <Analytics.ProductView
+          data={{
+            products: [
+              {
+                id: product.id,
+                title: product.title,
+                price: selectedVariant?.price.amount || '0',
+                vendor: product.vendor,
+                variantId: selectedVariant?.id || '',
+                variantTitle: selectedVariant?.title || '',
+                quantity: 1,
+              },
+            ],
+          }}
         />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
       </div>
-      <Analytics.ProductView
-        data={{
-          products: [
-            {
-              id: product.id,
-              title: product.title,
-              price: selectedVariant?.price.amount || '0',
-              vendor: product.vendor,
-              variantId: selectedVariant?.id || '',
-              variantTitle: selectedVariant?.title || '',
-              quantity: 1,
-            },
-          ],
-        }}
-      />
-    </div>
+      
+      <EmotionSection />
+    </>
   );
 }
 
@@ -190,6 +227,15 @@ const PRODUCT_FRAGMENT = `#graphql
     description
     encodedVariantExistence
     encodedVariantAvailability
+    images(first: 10) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
     options {
       name
       optionValues {
@@ -230,6 +276,13 @@ const PRODUCT_QUERY = `#graphql
   ) @inContext(country: $country, language: $language) {
     product(handle: $handle) {
       ...Product
+      collections(first: 1) {
+        nodes {
+          id
+          title
+          handle
+        }
+      }
     }
   }
   ${PRODUCT_FRAGMENT}

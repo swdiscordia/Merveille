@@ -111,7 +111,7 @@ function CartEmpty({
         Votre panier est vide
       </h3>
       <p className="text-gray-500 mb-6">
-        Il semble que vous n'ayez encore rien ajouté, commençons par faire du shopping !
+        Il semble que vous n&apos;ayez encore rien ajouté, commençons par faire du shopping !
       </p>
       <Link 
         to="/collections" 

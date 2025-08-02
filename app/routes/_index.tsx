@@ -7,6 +7,7 @@ import type {
   RecommendedProductsQuery,
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
+import {EmotionSection} from '~/components/EmotionSection';
 
 export const meta: MetaFunction = () => {
   return [{title: 'Merveille | Artisanat d\'exception'}];
@@ -72,9 +73,9 @@ export default function Homepage() {
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">Merveille du Monde</h1>
-          <p className="hero-subtitle">Artisanat d'exception, créations uniques</p>
+          <p className="hero-subtitle">Artisanat d&apos;exception, créations uniques</p>
           <p className="hero-description">
-            Découvrez notre collection d'objets artisanaux soigneusement sélectionnés : 
+            Découvrez notre collection d&apos;objets artisanaux soigneusement sélectionnés : 
             boîtes à musique, boîtes à bijoux et globes terrestres de qualité exceptionnelle.
           </p>
           <Link to="/collections" className="hero-cta">
@@ -113,6 +114,9 @@ export default function Homepage() {
         </section>
       )}
 
+      {/* Emotion Section */}
+      <EmotionSection />
+
       {/* Artisanat Values Section */}
       <section className="values-section">
         <div className="container">
@@ -149,7 +153,7 @@ export default function Homepage() {
               className="newsletter-input"
             />
             <button type="submit" className="newsletter-button">
-              S'inscrire
+              S&apos;inscrire
             </button>
           </form>
         </div>
