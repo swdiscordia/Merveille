@@ -12,6 +12,7 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductGallery} from '~/components/ProductGallery';
 import {ProductForm} from '~/components/ProductForm';
 import {ProductTabs} from '~/components/ProductTabs';
+import {ServiceCards} from '~/components/ServiceCards';
 import {EmotionSection} from '~/components/EmotionSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
@@ -151,6 +152,8 @@ export default function Product() {
               selectedVariant={selectedVariant}
             />
             <br />
+            
+            <ServiceCards />
 
           </div>
                 </div>
