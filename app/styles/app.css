@@ -1569,6 +1569,188 @@ kbd {
 
 /*
 * --------------------------------------------------
+* Collection Layout & Filters
+* --------------------------------------------------
+*/
+.collection-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.collection-sidebar {
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+}
+
+.collection-main {
+  min-width: 0;
+}
+
+.collection-tabs {
+  margin-bottom: 0;
+}
+
+.collection-tabs .tabs-navigation {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.collection-tabs .tabs-list {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.collection-tabs .tab-button {
+  background: none;
+  border: none;
+  padding: 0.75rem 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.collection-tabs .tab-button:hover {
+  color: #000;
+}
+
+.collection-tabs .tab-button.active {
+  color: #000;
+  font-weight: 600;
+}
+
+.collection-tabs .tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #000;
+}
+
+.filters-section {
+  width: 100%;
+  text-align: left;
+}
+
+.filters-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.filter-separator {
+  width: 40px;
+  height: 2px;
+  background: #000;
+  margin: 0 0 1.5rem 0;
+}
+
+.filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.filter-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.filter-item:hover {
+  background: #e9ecef;
+  border-color: #ddd;
+}
+
+.filter-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.filter-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #000;
+  cursor: pointer;
+}
+
+.filter-label {
+  font-weight: 500;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+.filter-count {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .collection-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .collection-sidebar {
+    position: static;
+    order: 1;
+  }
+  
+  .collection-main {
+    order: 2;
+  }
+  
+  .collection-tabs .tabs-list {
+    gap: 1rem;
+  }
+  
+  .collection-tabs .tab-button {
+    font-size: 0.8rem;
+    padding: 0.5rem 0;
+  }
+  
+  .filter-list {
+    gap: 0.5rem;
+  }
+  
+  .filter-item {
+    padding: 0.6rem;
+  }
+  
+  .filters-title {
+    font-size: 1rem;
+  }
+}
+
+/*
+* --------------------------------------------------
 * Product Variant Selector
 * --------------------------------------------------
 */
