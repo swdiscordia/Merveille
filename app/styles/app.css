@@ -221,6 +221,119 @@ button.reset:hover:not(:has(> *)) {
   z-index: 1;
 }
 
+/* Header responsive improvements */
+@media (max-width: 640px) {
+  .header-ctas {
+    gap: 0.25rem;
+  }
+  
+  .header-ctas .header-account-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    min-width: auto;
+  }
+  
+  .header-ctas button,
+  .header-ctas a {
+    padding: 0.5rem;
+  }
+}
+
+/* Search Bar Styles */
+.search-bar {
+  border-top: 1px solid #e5e7eb;
+  background: white;
+  padding: 0.75rem 1rem;
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced search input styles */
+.search-input-enhanced {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-input-enhanced:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input-enhanced:hover:not(:focus) {
+  transform: translateY(-0.5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Desktop search bar enhancements */
+@media (min-width: 768px) {
+  .search-bar-desktop {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .search-input-enhanced {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid #e2e8f0;
+  }
+  
+  .search-input-enhanced:focus {
+    background: rgba(255, 255, 255, 1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Search input responsive improvements */
+.search-input {
+  padding-left: 2.75rem !important;
+  padding-right: 3rem !important;
+}
+
+@media (max-width: 640px) {
+  .search-bar {
+    padding: 0.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  }
+  
+  .search-input,
+  .search-input-enhanced {
+    padding-left: 2.5rem !important;
+    padding-right: 2.75rem !important;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-size: 0.9rem;
+    border-width: 1px;
+    border-radius: 0.5rem;
+  }
+  
+  .search-bar .search-icon {
+    left: 0.75rem;
+  }
+  
+  .search-bar .close-button {
+    right: 0.75rem;
+  }
+}
+
+/* Keyboard shortcut styling */
+kbd {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
 .header-menu-mobile-toggle {
   @media (min-width: 48em) {
     display: none;
@@ -241,6 +354,23 @@ button.reset:hover:not(:has(> *)) {
     grid-gap: 1rem;
     margin-left: 3rem;
   }
+}
+
+
+
+/* Fix navbar jumping issue - neutralize text-decoration from reset.css */
+.header nav a {
+  text-decoration: none !important;
+}
+
+.header nav a:hover {
+  text-decoration: none !important;
+}
+
+/* Remove underline from logo/title */
+.no-underline,
+.no-underline:hover {
+  text-decoration: none !important;
 }
 
 .header-menu-item {

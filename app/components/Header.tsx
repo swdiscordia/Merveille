@@ -1,4 +1,4 @@
-import {Suspense} from 'react';
+import {Suspense, useState, useEffect, useRef} from 'react';
 import {Await, NavLink, useAsyncValue} from 'react-router';
 import {
   type CartViewPayload,
@@ -7,6 +7,7 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {SearchForm} from '~/components/SearchForm';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -24,6 +25,8 @@ export function Header({
   publicStoreDomain,
 }: HeaderProps) {
   const {shop, menu} = header;
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,7 +36,7 @@ export function Header({
             to="/" 
             style={activeLinkStyle} 
             end
-            className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
+            className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors no-underline"
           >
             <strong>{shop.name}</strong>
           </NavLink>
@@ -43,8 +46,14 @@ export function Header({
             primaryDomainUrl={header.shop.primaryDomain.url}
             publicStoreDomain={publicStoreDomain}
           />
-          <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+          <HeaderCtas 
+            isLoggedIn={isLoggedIn} 
+            cart={cart} 
+            isSearchOpen={isSearchOpen}
+            setIsSearchOpen={setIsSearchOpen}
+          />
         </div>
+        {isSearchOpen && <SearchBar onClose={() => setIsSearchOpen(false)} />}
       </div>
     </header>
   );
@@ -64,7 +73,7 @@ export function HeaderMenu({
   const {close} = useAside();
 
   const navClasses = viewport === 'desktop' 
-    ? "hidden md:flex space-x-8" 
+    ? "hidden md:flex gap-8" 
     : "flex flex-col space-y-4";
 
   return (
@@ -112,23 +121,37 @@ export function HeaderMenu({
 function HeaderCtas({
   isLoggedIn,
   cart,
-}: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
+  isSearchOpen,
+  setIsSearchOpen,
+}: Pick<HeaderProps, 'isLoggedIn' | 'cart'> & {
+  isSearchOpen: boolean;
+  setIsSearchOpen: (open: boolean) => void;
+}) {
   return (
-    <nav className="flex items-center space-x-2" role="navigation">
+    <nav className="flex items-center space-x-1 sm:space-x-2" role="navigation">
       <HeaderMenuMobileToggle />
       <NavLink 
         prefetch="intent" 
         to="/account" 
         style={activeLinkStyle}
-        className="text-gray-900 hover:text-gray-700 transition-colors font-medium px-3 py-2 rounded-md hover:bg-gray-50"
+        className="text-gray-900 hover:text-gray-700 transition-all font-medium px-2 sm:px-3 py-2 rounded-md hover:border hover:border-black text-sm sm:text-base whitespace-nowrap border border-transparent"
       >
-        <Suspense fallback="Se connecter">
-          <Await resolve={isLoggedIn} errorElement="Se connecter">
-            {(isLoggedIn) => (isLoggedIn ? 'Compte' : 'Se connecter')}
+        <Suspense fallback={<span className="hidden sm:inline">Se connecter</span>}>
+          <Await resolve={isLoggedIn} errorElement={<span className="hidden sm:inline">Se connecter</span>}>
+            {(isLoggedIn) => (
+              <span>
+                <span className="hidden sm:inline">{isLoggedIn ? 'Compte' : 'Se connecter'}</span>
+                <span className="sm:hidden">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </span>
+              </span>
+            )}
           </Await>
         </Suspense>
       </NavLink>
-      <SearchToggle />
+      <SearchToggle isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
       <CartToggle cart={cart} />
     </nav>
   );
@@ -159,12 +182,21 @@ function HeaderMenuMobileToggle() {
   );
 }
 
-function SearchToggle() {
-  const {open} = useAside();
+function SearchToggle({
+  isSearchOpen,
+  setIsSearchOpen,
+}: {
+  isSearchOpen: boolean;
+  setIsSearchOpen: (open: boolean) => void;
+}) {
   return (
     <button 
-      className="p-2 rounded-md text-gray-900 hover:text-gray-700 hover:bg-gray-50 transition-colors" 
-      onClick={() => open('search')}
+      className={`p-2 rounded-md transition-colors ${
+        isSearchOpen 
+          ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
+          : 'text-gray-900 hover:text-gray-700 hover:bg-gray-50'
+      }`}
+      onClick={() => setIsSearchOpen(!isSearchOpen)}
       aria-label="Rechercher"
     >
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,6 +294,77 @@ const FALLBACK_HEADER_MENU = {
     },
   ],
 };
+
+function SearchBar({ onClose }: { onClose: () => void }) {
+  const searchBarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
+  // Fermer la barre de recherche après soumission
+  const handleSubmit = () => {
+    setTimeout(() => onClose(), 100); // Délai pour permettre la navigation
+  };
+
+  return (
+    <div 
+      ref={searchBarRef}
+      className="border-t bg-white py-4 px-4 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-lg mx-auto">
+        <SearchForm action="/search" onSubmit={handleSubmit}>
+          {({ inputRef }) => (
+            <div className="relative flex items-center justify-center">
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none z-10">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                ref={inputRef}
+                type="search"
+                name="q"
+                placeholder="Rechercher..."
+                autoFocus
+                style={{ paddingLeft: '3rem' }}
+                className="w-full pr-11 py-3 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
+              />
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute right-3 text-gray-400 hover:text-gray-600"
+                aria-label="Fermer la recherche"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </SearchForm>
+      </div>
+    </div>
+  );
+}
 
 function activeLinkStyle({
   isActive,
