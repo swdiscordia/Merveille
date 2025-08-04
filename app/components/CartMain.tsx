@@ -20,6 +20,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   // The useOptimisticCart hook applies pending actions to the cart
   // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(originalCart);
+  const {close} = useAside();
 
   const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
   const withDiscount =
@@ -78,6 +79,32 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   // Layout pour aside (mobile/tablet)
   return (
     <div className="flex flex-col h-full">
+      {/* Header avec bouton de fermeture */}
+      <div className="cart-aside-header">
+        <button 
+          onClick={close}
+          className="cart-close-button"
+          aria-label="Fermer le panier et continuer les achats"
+        >
+          <svg 
+            className="cart-close-icon" 
+            width="20" 
+            height="20" 
+            viewBox="0 0 24 24" 
+            fill="none"
+          >
+            <path 
+              d="M19 12H5M12 19L5 12L12 5" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="cart-close-text">Continuer mes achats</span>
+        </button>
+      </div>
+      
       <CartEmpty hidden={linesCount} layout={layout} />
       <div className="flex-1 flex flex-col">
         <div className="flex-1" aria-labelledby="cart-lines">

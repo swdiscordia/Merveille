@@ -3,7 +3,7 @@ import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Image, type OptimisticCartLine} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
 import {Link} from 'react-router';
-import {ProductPrice} from '~/components/ProductPrice';
+import {CartProductPrice} from '~/components/CartProductPrice';
 import {useAside} from './Aside';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 
@@ -76,7 +76,7 @@ export function CartLineItem({
           {/* Colonne Total */}
           <div className="col-span-3 flex items-center justify-end">
             <div className="text-right">
-              <ProductPrice price={line?.cost?.totalAmount} />
+              <CartProductPrice price={line?.cost?.totalAmount} />
               <CartLineRemoveButton lineIds={[id]} disabled={false} />
             </div>
           </div>
@@ -108,7 +108,7 @@ export function CartLineItem({
                 <strong>{product.title}</strong>
               </p>
             </Link>
-            <ProductPrice price={line?.cost?.totalAmount} />
+            <CartProductPrice price={line?.cost?.totalAmount} />
             <ul className="mt-1 space-y-1">
               {selectedOptions.map((option) => (
                 <li key={option.name} className="text-xs text-gray-500">
@@ -157,7 +157,7 @@ export function CartLineItem({
             <strong>{product.title}</strong>
           </p>
         </Link>
-        <ProductPrice price={line?.cost?.totalAmount} />
+        <CartProductPrice price={line?.cost?.totalAmount} />
         <ul className="mt-1 space-y-1">
           {selectedOptions.map((option) => (
             <li key={option.name} className="text-xs text-gray-500">
