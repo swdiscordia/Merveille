@@ -17,113 +17,105 @@ export function Footer({
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
+          <footer className="modern-footer">
+            {/* Logo et titre principal */}
+            <div className="footer-brand">
+              <h2 className="footer-logo">Merveille du Monde</h2>
+            </div>
+
+            {/* Contenu principal du footer */}
+            <div className="footer-content">
+              {/* Section MERVEILLE DU MONDE */}
+              <div className="footer-section">
+                <h3 className="footer-section-title">MERVEILLE DU MONDE</h3>
+                                 <div className="footer-section-content">
+                   <p>La boutique en ligne spécialiste de merveille du monde !</p>
+                   <p>Service client à votre service du Lundi au Dimanche.</p>
+                 </div>
+              </div>
+
+              {/* Section INFORMATIONS */}
+              <div className="footer-section">
+                <h3 className="footer-section-title">INFORMATIONS</h3>
+                <div className="footer-section-content">
+                  <NavLink to="/policies/terms-of-service" className="footer-link">
+                    CGV
+                  </NavLink>
+                  <NavLink to="/policies/terms-of-service" className="footer-link">
+                    CGU
+                  </NavLink>
+                  <NavLink to="/policies/legal-notice" className="footer-link">
+                    Mentions légales
+                  </NavLink>
+                  <NavLink to="/policies/privacy-policy" className="footer-link">
+                    Politique de confidentialité
+                  </NavLink>
+                  <NavLink to="/policies/secure-payment" className="footer-link">
+                    Paiement sécurisé
+                  </NavLink>
+                </div>
+              </div>
+
+              {/* Section BESOIN D'AIDE */}
+              <div className="footer-section">
+                <h3 className="footer-section-title">BESOIN D'AIDE ?</h3>
+                <div className="footer-section-content">
+                  <NavLink to="/pages/contact" className="footer-link">
+                    Nous contacter
+                  </NavLink>
+                  <NavLink to="/pages/faq" className="footer-link">
+                    FAQ's
+                  </NavLink>
+                  <NavLink to="/pages/order-tracking" className="footer-link">
+                    Suivi de commande
+                  </NavLink>
+                  <NavLink to="/policies/refund-policy" className="footer-link">
+                    Retours et remboursement
+                  </NavLink>
+                </div>
+              </div>
+
+              {/* Section NEWSLETTER */}
+              <div className="footer-section">
+                <h3 className="footer-section-title">NEWSLETTER</h3>
+                <div className="footer-section-content">
+                  <p>Recevez nos nouveautés et promotions directement dans votre boîte mail !</p>
+                  <div className="newsletter-form">
+                    <input 
+                      type="email" 
+                      placeholder="Votre e-mail" 
+                      className="newsletter-input"
+                    />
+                                         <button className="newsletter-button" aria-label="S'abonner à la newsletter">
+                       S'inscrire
+                     </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Barre de paiement en bas */}
+            <div className="footer-bottom">
+              <div className="footer-bottom-content">
+                <div className="footer-copyright">
+                  Merveille du Monde
+                </div>
+                <div className="footer-payment">
+                  <span className="payment-text">Nous acceptons</span>
+                  <div className="payment-methods">
+                    <div className="payment-icon amex" aria-label="American Express"></div>
+                    <div className="payment-icon apple-pay" aria-label="Apple Pay"></div>
+                    <div className="payment-icon google-pay" aria-label="Google Pay"></div>
+                    <div className="payment-icon mastercard" aria-label="Mastercard"></div>
+                    <div className="payment-icon paypal" aria-label="PayPal"></div>
+                    <div className="payment-icon visa" aria-label="Visa"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </footer>
         )}
       </Await>
     </Suspense>
   );
-}
-
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
-  return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
-
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
 }
