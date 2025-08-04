@@ -19,9 +19,20 @@ export async function createAppLoadContext(
   }
 
   const waitUntil = executionContext.waitUntil.bind(executionContext);
+  
+  // Add timeout wrapper for network operations
+  const withTimeout = <T>(promise: Promise<T>, timeoutMs: number = 10000): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Network connection lost')), timeoutMs)
+      )
+    ]);
+  };
+
   const [cache, session] = await Promise.all([
-    caches.open('hydrogen'),
-    AppSession.init(request, [env.SESSION_SECRET]),
+    withTimeout(caches.open('hydrogen')),
+    withTimeout(AppSession.init(request, [env.SESSION_SECRET])),
   ]);
 
   const hydrogenContext = createHydrogenContext({

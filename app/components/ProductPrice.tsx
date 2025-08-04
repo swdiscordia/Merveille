@@ -8,6 +8,7 @@ export function ProductPrice({
   price?: MoneyV2;
   compareAtPrice?: MoneyV2 | null;
 }) {
+
   return (
     <div className="product-price">
       {compareAtPrice ? (

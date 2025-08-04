@@ -92,6 +92,11 @@ export default function Product() {
     getAdjacentAndFirstAvailableVariants(product),
   );
 
+  // Debug: log all variant data
+  console.log('Product Debug - Full Product:', product);
+  console.log('Product Debug - Selected Variant:', selectedVariant);
+  console.log('Product Debug - All Variants:', product.variants?.nodes || 'No variants found');
+
   // Sets the search param to the selected variant without navigation
   // only when no search params are set in the url
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
@@ -254,6 +259,11 @@ const PRODUCT_FRAGMENT = `#graphql
             }
           }
         }
+      }
+    }
+    variants(first: 100) {
+      nodes {
+        ...ProductVariant
       }
     }
     selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {

@@ -54,7 +54,22 @@ export default {
 
       return response;
     } catch (error) {
-      console.error(error);
+      console.error('Server error:', error);
+      
+      // Handle network connection errors specifically
+      if (error instanceof Error && (
+        error.message.includes('Network connection lost') ||
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ETIMEDOUT')
+      )) {
+        return new Response('Network connection error. Please try again.', {
+          status: 503,
+          headers: {
+            'Retry-After': '5'
+          }
+        });
+      }
+      
       return new Response('An unexpected error occurred', {status: 500});
     }
   },
