@@ -141,23 +141,7 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="newsletter-section">
-        <div className="container">
-          <h2>Restez informé de nos nouvelles créations</h2>
-          <p>Recevez en avant-première nos dernières collections et offres exclusives</p>
-          <form className="newsletter-form">
-            <input 
-              type="email" 
-              placeholder="Votre adresse email" 
-              className="newsletter-input"
-            />
-            <button type="submit" className="newsletter-button">
-              S&apos;inscrire
-            </button>
-          </form>
-        </div>
-      </section>
+
     </div>
   );
 }
