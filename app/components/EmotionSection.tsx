@@ -7,9 +7,9 @@ export function EmotionSection() {
       <section className="emotion-section">
         <div className="emotion-container">
           <div className="emotion-content">
-            <h3 className="emotion-title">
+            <h2 className="emotion-title">
               Plongez dans l&apos;univers des émotions
-            </h3>
+            </h2>
             <p className="emotion-text">
               <span className="bullet">✦</span> Chaque objet de notre collection est une passerelle vers l&apos;intime, un fragment d&apos;émotion gravé dans le temps. Il réveille en nous un souvenir, une sensation, un sourire enfoui.
             </p>
@@ -34,9 +34,9 @@ export function EmotionSection() {
       <section className="emotion-section emotion-section-reversed">
         <div className="emotion-container emotion-container-reversed">
           <div className="emotion-content">
-            <h3 className="emotion-title">
+            <h2 className="emotion-title">
               Quand l&apos;objet devient messager
-            </h3>
+            </h2>
             <p className="emotion-text">
               <span className="bullet">✦</span> Nos créations sont bien plus que de simples objets : elles parlent à la mémoire, au cœur, à l&apos;âme. Elles disent l&apos;amour, l&apos;amitié, la nostalgie ou le rêve, sans un mot.
             </p>

@@ -2014,9 +2014,7 @@ kbd {
 
 /* Enhanced Layout */
 .collection-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 2rem;
+  display: block;
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
@@ -2028,106 +2026,12 @@ kbd {
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.collection-sidebar {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  height: fit-content;
-  position: sticky;
-  top: 2rem;
-  border: 1px solid #e9ecef;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.sidebar-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.clear-filters {
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 0.875rem;
-  cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.2s ease;
-}
-
-.clear-filters:hover {
-  color: #000;
-}
-
-/* Modern Filters */
-.modern-collection-filters {
+.collection-main-full {
   width: 100%;
+  padding: 0;
 }
 
-.filters-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
 
-.filters-header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.filters-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.filters-toggle-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 6px;
-  color: #666;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.filters-toggle-btn:hover {
-  background: #f5f5f5;
-  color: #333;
-}
-
-.filters-content {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.filters-content.filters-closed {
-  max-height: 0;
-  opacity: 0;
-  margin-top: 0;
-}
-
-.filters-content.filters-open {
-  max-height: 1000px;
-  opacity: 1;
-  margin-top: 1rem;
-}
 
 .active-filters-badge {
   background: #495057;
@@ -4592,7 +4496,7 @@ a.product-item:hover small {
 }
 
 .section-title {
-  font-size: 0.9rem;
+  font-size: 2.5rem;
   font-weight: 600;
   color: #1a1a1a;
   margin: 0;
@@ -4712,7 +4616,7 @@ a.product-item:hover small {
   height: 6px;
   background: #e9ecef;
   border-radius: 3px;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 
 .range-input {

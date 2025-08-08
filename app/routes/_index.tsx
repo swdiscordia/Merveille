@@ -124,8 +124,8 @@ export default function Homepage() {
           <div className="values-grid">
             <div className="value-item">
               <div className="value-icon">🎨</div>
-              <h3>Artisanat Français</h3>
-              <p>Chaque pièce est créée avec passion par des artisans français, respectant les traditions et techniques ancestrales.</p>
+              <h3>Artisanat</h3>
+              <p>Chaque pièce est créée avec passion par des artisans, respectant les traditions et techniques ancestrales.</p>
             </div>
             <div className="value-item">
               <div className="value-icon">✨</div>

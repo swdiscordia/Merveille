@@ -14,7 +14,7 @@ export function ServiceCards() {
           <div className="service-icon">✅</div>
           <div className="service-content">
             <h3 className="service-title">Satisfait ou remboursé</h3>
-            <p className="service-description">Retour 14 jours<br />Garantie 2 ans</p>
+            <p className="service-description">Retour 14 jours</p>
           </div>
         </div>
 

@@ -1,0 +1,183 @@
+warning: in the working copy of 'app/components/EmotionSection.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/components/ProductGallery.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/components/ProductTabs.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routes/_index.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routes/collections.$handle.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/styles/app.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'storefrontapi.generated.d.ts', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/app/components/CollectionTabs.tsx b/app/components/CollectionTabs.tsx[m
+[1mdeleted file mode 100644[m
+[1mindex fb97014..0000000[m
+[1m--- a/app/components/CollectionTabs.tsx[m
+[1m+++ /dev/null[m
+[36m@@ -1,429 +0,0 @@[m
+[31m-import {useState, useEffect, useRef} from 'react';[m
+[31m-import {useSearchParams, useNavigate, useLocation} from 'react-router';[m
+[31m-[m
+[31m-interface TabContent {[m
+[31m-  id: string;[m
+[31m-  label: string;[m
+[31m-  content: React.ReactNode;[m
+[31m-}[m
+[31m-[m
+[31m-export function CollectionTabs() {[m
+[31m-  const [searchParams] = useSearchParams();[m
+[31m-  const navigate = useNavigate();[m
+[31m-  const location = useLocation();[m
+[31m-  const debounceTimeoutRef = useRef<NodeJS.Timeout>();[m
+[31m-  [m
+[31m-  const [activeTab, setActiveTab] = useState('categories');[m
+[31m-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);[m
+[31m-  const [expandedSections, setExpandedSections] = useState<string[]>(['filters']);[m
+[31m-  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });[m
+[31m-  const [isFiltersOpen, setIsFiltersOpen] = useState(true);[m
+[31m-  const [searchTerm, setSearchTerm] = useState('');[m
+[31m-[m
+[31m-  // Initialize filters from URL params[m
+[31m-  useEffect(() => {[m
+[31m-    const urlFilters = searchParams.getAll('filter');[m
+[31m-    const urlPriceMin = searchParams.get('price_min');[m
+[31m-    const urlPriceMax = searchParams.get('price_max');[m
+[31m-    [m
+[31m-    setSelectedFilters(urlFilters);[m
+[31m-    if (urlPriceMin || urlPriceMax) {[m
+[31m-      setPriceRange({[m
+[31m-        min: urlPriceMin ? parseInt(urlPriceMin) : 0,[m
+[31m-        max: urlPriceMax ? parseInt(urlPriceMax) : 1000[m
+[31m-      });[m
+[31m-    }[m
+[31m-  }, [searchParams]);[m
+[31m-[m
+[31m-  // Cleanup timeout on unmount[m
+[31m-  useEffect(() => {[m
+[31m-    return () => {[m
+[31m-      if (debounceTimeoutRef.current) {[m
+[31m-        clearTimeout(debounceTimeoutRef.current);[m
+[31m-      }[m
+[31m-    };[m
+[31m-  }, []);[m
+[31m-[m
+[31m-  const updateURLParams = (filters: string[], priceMin: number, priceMax: number) => {[m
+[31m-    try {[m
+[31m-      // Save current scroll position[m
+[31m-      const currentScrollY = window.scrollY;[m
+[31m-      [m
+[31m-      const newSearchParams = new URLSearchParams(searchParams);[m
+[31m-      [m
+[31m-      // Check if filters have changed to determine if we should reset pagination[m
+[31m-      const currentFilters = searchParams.getAll('filter');[m
+[31m-      const currentPriceMin = searchParams.get('price_min');[m
+[31m-      const currentPriceMax = searchParams.get('price_max');[m
+[31m-      [m
+[31m-      const filtersChanged = [m
+[31m-        JSON.stringify(currentFilters.sort()) !== JSON.stringify(filters.sort()) ||[m
+[31m-        currentPriceMin !== (priceMin > 0 ? priceMin.toString() : null) ||[m
+[31m-        currentPriceMax !== (priceMax < 1000 ? priceMax.toString() : null);[m
+[31m-      [m
+[31m-      // Remove all existing filter params[m
+[31m-      newSearchParams.delete('filter');[m
+[31m-      newSearchParams.delete('price_min');[m
+[31m-      newSearchParams.delete('price_max');[m
+[31m-      [m
+[31m-      // Add new filter params[m
+[31m-      filters.forEach(filter => {[m
+[31m-        if (filter && filter.trim()) {[m
+[31m-          newSearchParams.append('filter', filter);[m
+[31m-        }[m
+[31m-      });[m
+[31m-      [m
+[31m-      // Add price range if different from defaults[m
+[31m-      if (priceMin > 0) {[m
+[31m-        newSearchParams.set('price_min', priceMin.toString());[m
+[31m-      }[m
+[31m-      if (priceMax < 1000) {[m
+[31m-        newSearchParams.set('price_max', priceMax.toString());[m
+[31m-      }[m
+[31m-      [m
+[31m-      // Reset pagination if filters changed[m
+[31m-      if (filtersChanged) {[m
+[31m-        newSearchParams.delete('cursor');[m
+[31m-        console.log('Filters changed, resetting pagination');[m
+[31m-      } else {[m
+[31m-        // Preserve existing pagination parameters if they exist[m
+[31m-        const existingCursor = searchParams.get('cursor');[m
+[31m-        if (existingCursor) {[m
+[31m-          newSearchParams.set('cursor', existingCursor);[m
+[31m-        }[m
+[31m-      }[m
+[31m-      [m
+[31m-      // Debug: log the URL parameters being set[m
+[31m-      console.log('Updating URL params:', {[m
+[31m-        filters,[m
+[31m-        priceMin,[m
+[31m-        priceMax,[m
+[31m-        filtersChanged,[m
+[31m-        newSearchParams: newSearchParams.toString()[m
+[31m-      });[m
+[31m-      [m
+[31m-      const newUrl = `${location.pathname}?${newSearchParams.toString()}`;[m
+[31m-      [m
+[31m-      // Try to use preventScrollReset if available, otherwise use manual restoration[m
+[31m-      try {[m
+[31m-        navigate(newUrl, { [m
+[31m-          replace: true,[m
+[31m-          preventScrollReset: true [m
+[31m-        });[m
+[31m-        [m
+[31m-        // Double-check: restore scroll position after navigation as fallback[m
+[31m-        requestAnimationFrame(() => {[m
+[31m-          if (window.scrollY !== currentScrollY) {[m
+[31m-            window.scrollTo(0, currentScrollY);[m
+[31m-          }[m
+[31m-        });[m
+[31m-      } catch (navError) {[m
+[31m-        // Fallback for older React Router versions[m
+[31m-        navigate(newUrl, { replace: true });[m
+[31m-        [m
+[31m-        // Restore scroll position after navigation[m
+[31m-        requestAnimationFrame(() => {[m
+[31m-          window.scrollTo(0, currentScrollY);[m
+[31m-        });[m
+[31m-      }[m
+[31m-    } catch (error) {[m
+[31m-      console.error('Error updating URL params:', error);[m
+[31m-    }[m
+[31m-  };[m
+[31m-[m
+[31m-  const handleFilterChange = (filterId: string) => {[m
+[31m-    const newFilters = selectedFilters.includes(filterId) [m
+[31m-      ? selectedFilters.filter(id => id !== filterId)[m
+[31m-      : [...selectedFilters, filterId];[m
+[31m-    [m
+[31m-    setSelectedFilters(newFilters);[m
+[31m-    updateURLParams(newFilters, priceRange.min, priceRange.max);[m
+[31m-  };[m
+[31m-[m
+[31m-  const clearAllFilters = () => {[m
+[31m-    setSelectedFilters([]);[m
+[31m-    setPriceRange({ min: 0, max: 1000 });[m
+[31m-    updateURLParams([], 0, 1000);[m
+[31m-  };[m
+[31m-[m
+[31m-  const toggleSection = (sectionId: string) => {[m
+[31m-    setExpandedSections(prev => [m
+[31m-      prev.includes(sectionId)[m
+[31m-        ? prev.filter(id => id !== sectionId)[m
+[31m-        : [...prev, sectionId][m
+[31m-    );[m
+[31m-  };[m
+[31m-[m
+[31m-  const toggleFilters = () => {[m
+[31m-    setIsFiltersOpen(!isFiltersOpen);[m
+[31m-  };[m
+[31m-[m
+[31m-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {[m
+[31m-    setSearchTerm(e.target.value);[m
+[31m-  };[m
+[31m-[m
+[31m-  const handlePriceRangeChange = (type: 'min' | 'max', value: number) => {[m
+[31m-    // Validate price values[m
+[31m-    const validValue = Math.max(0, Math.min(value, 1000)); // Cap between 0 and 1000[m
+[31m-    [m
+[31m-    const newPriceRange = {[m
+[31m-      ...priceRange,[m
