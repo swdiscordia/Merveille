@@ -40,28 +40,6 @@ export function ProductTabs({product}: ProductTabsProps) {
             <li>Mécanisme : Manivelle traditionnelle</li>
             <li>Dimensions : 6.5 x 5.2 x 4.2 cm</li>
           </ul>
-          
-          <div className="audio-section">
-            <h4 className="audio-title">EXTRAIT</h4>
-            <div className="audio-player">
-              <button className="play-button" aria-label="Play">
-                <span className="play-icon">▶</span>
-              </button>
-              <div className="audio-info">
-                <span className="current-time">0:00</span>
-                <div className="progress-bar">
-                  <div className="progress-fill"></div>
-                </div>
-                <span className="total-time">0:15</span>
-              </div>
-              <button className="volume-button" aria-label="Volume">
-                <span className="volume-icon">🔊</span>
-              </button>
-              <button className="more-button" aria-label="More options">
-                <span className="more-icon">⋮</span>
-              </button>
-            </div>
-          </div>
         </div>
       ),
     },
@@ -71,7 +49,7 @@ export function ProductTabs({product}: ProductTabsProps) {
       content: (
         <div className="tab-content">
           <p>
-            <span className="bullet">►</span> Il vous suffit simplement d&apos;actionner la manivelle en la tournant à vitesse constante pour laisse le mécanisme opérer et la mélodie se jouer. Une utilisation <strong>simple et rapide</strong> qui ne nécessite aucune pile ou batterie.
+            Il vous suffit simplement d&apos;actionner la manivelle en la tournant à vitesse constante pour laisse le mécanisme opérer et la mélodie se jouer. Une utilisation <strong>simple et rapide</strong> qui ne nécessite aucune pile ou batterie.
           </p>
         </div>
       ),
@@ -95,16 +73,16 @@ export function ProductTabs({product}: ProductTabsProps) {
         <div className="tab-content">
           <div className="delivery-section">
             <h4 className="delivery-title">
-              <span className="bullet">◆</span> Livraison suivie offerte
+              Livraison suivie offerte
             </h4>
             <p>
-              Livraison suivie gratuite pour toutes les commandes passées depuis la France métropolitaine, sans minimum d&apos;achat. Délai de livraison moyen entre 5 et 12 jours ouvrés. Suivez votre commande depuis l&apos;expédition directement sur notre <a href="/faq" className="link">plateforme de suivi</a>.
+              Livraison suivie gratuite pour toutes les commandes passées depuis la France métropolitaine, sans minimum d&apos;achat. Délai de livraison moyen entre 5 et 12 jours ouvrés.
             </p>
           </div>
           
           <div className="returns-section">
             <h4 className="returns-title">
-              <span className="bullet">◆</span> Retours gratuits
+              Retours gratuits
             </h4>
             <p>
               Bénéficiez de notre garantie &quot;satisfait ou remboursé&quot;. Si un article ne vous convient pas, vous disposez de 14 jours à compter de la réception de votre colis pour effectuer un retour gratuit et obtenir un remboursement.

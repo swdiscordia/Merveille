@@ -7,7 +7,7 @@ export function ProductGallery({
   selectedVariantImage,
 }: {
   images: ProductFragment['images'];
-  selectedVariantImage?: ProductFragment['selectedOrFirstAvailableVariant']['image'];
+  selectedVariantImage?: NonNullable<ProductFragment['selectedOrFirstAvailableVariant']>['image'];
 }) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 

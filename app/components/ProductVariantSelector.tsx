@@ -38,7 +38,7 @@ export function ProductVariantSelector({
                 } = value;
 
                 // Get the variant image from the firstSelectableVariant
-                const variantImage = value.firstSelectableVariant?.image;
+                const variantImage = value.firstSelectableVariant && 'image' in value.firstSelectableVariant ? value.firstSelectableVariant.image : undefined;
                 const swatchImage = swatch?.image?.previewImage?.url;
                 const swatchColor = swatch?.color;
 
